@@ -74,7 +74,7 @@ URL: https://drive.google.com/file/d/12-SDr-KZ3I1tYXtsTYHScTxq2SS5Ig4j/view?usp=
 
 ## Running
 
-You need to download the models first. Place the classification model file (VGG16) under the weights/class folder. Place the detection model file (mobilenet-ssd) under the weights/detection folder.
+You need to download the models' files first. Place the classification model file (VGG16) under the weights/class folder. Place the detection model file (mobilenet-ssd) under the weights/detection folder.
 
 You can test out the recognition system directly wihout accessing to the application UI. It will run by default on GPU, but nevertheless, if you don't have the CUDA environment installed it will run on CPU. Keep in mind that it will run much smoother and faster on GPU.
 
@@ -105,5 +105,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Acknowledgments
 
 * This project was made as part of the course of Intelligent Tutoring System.
+* The detection ssd model has been taken from qfgaohao (https://github.com/qfgaohao/pytorch-ssd).  
 
 
