@@ -26,11 +26,16 @@ Install kivy dependencies for UI environment.
 	$ sudo apt-get install python3-kivy
 ```
 
-Install denpendencies for the recognition system. We used Pytorch as a ML library, OpenCv2 for computer vision tasks, the application requires GPU to work properly and fast but can also work on CPU too.   
+Install Pytorch a very cool machine learning library. 
 
 ```
+https://pytorch.org/
 ```
 
+Install opencv2.
+```
+sudo apt-get install python-opencv
+```
 
 ### Installing
 
@@ -50,8 +55,8 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Run recognition system for hand detection + handshape classification
-Recognition system is composed of two sub models: the first is for hand detection and the second hand classification. 
+## Run recognition system
+Recognition system is composed of two sub models: the first is for hand detection and the second one is for hand classification. 
 
 ### Pretrained Models
 hand detection model (Mobilenetv1-ssd)
@@ -62,7 +67,9 @@ URL: https://drive.google.com/file/d/12-SDr-KZ3I1tYXtsTYHScTxq2SS5Ig4j/view?usp=
 
 ## Running
 
-You can test out the recognition system directly wihout.
+You need to download the models first. Place the classification model file (VGG16) under the weights/class folder. Place the detection model file (mobilenet-ssd) under the weights/detection folder.
+
+You can test out the recognition system directly wihout accessing to the application UI. It will run by default on GPU, but nevertheless, if you don't have the CUDA environment installed it will run on CPU. Keep in mind that it will run much smoother and faster on GPU.
 
 ```
 python3 run.py
@@ -90,6 +97,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* This project was made 
+* This project was made as part of the course of Intelligent Tutoring System.
 
 
