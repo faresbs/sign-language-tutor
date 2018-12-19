@@ -26,7 +26,7 @@ Install kivy dependencies for UI environment.
 	$ sudo apt-get install python3-kivy
 ```
 
-Install denpendencies for the recognition system. 
+Install denpendencies for the recognition system. We used Pytorch as a ML library, OpenCv2 for computer vision tasks, the application requires GPU to work properly and fast but can also work on CPU too.   
 
 ```
 ```
