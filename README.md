@@ -8,6 +8,13 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
+Ofcourse, you need to have python, here we are using python 3.6. So you need to installe python3.
+
+```
+sudo apt-get update
+sudo apt-get install python3.6
+```
+
 Install kivy dependencies for UI environment. 
 
 ```
