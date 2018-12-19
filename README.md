@@ -50,40 +50,33 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
-
-You can test out the recognition system directly.
+## Running
 
 ### Run recognition system for hand detection + handshape classification
+Recognition system is composed of two sub models: the first is for hand detection and the second hand classification. 
+
+
+You can test out the recognition system directly wihout.
 
 ```
 python3 run.py
 ```
 
 
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Kivy](https://kivy.org/#home) - Open source Python library for UI developement
+* [Pytorch](https://pytorch.org/) - ML library
+* [Opencv](https://opencv.org/) - Open Source Computer Vision Library
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+You are free to use this project or contribute that would be cool.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Fares Ben Slimane** - *recognition system* - [check my personal webpage](http://faresbs.github.io)
+* **Gaieth Dkhili** - *UI application*)
 
 ## License
 
@@ -91,7 +84,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* This project was made 
+
 
