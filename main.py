@@ -22,7 +22,7 @@ from kivy.utils import get_color_from_hex
 from arithmetic import Arithmetic, json_settings
 
 #-----pour la webam---
-from kivy.lang import Builder
+#from kivy.lang import Builder
 
 from kivy.uix.image import Image
 from kivy.graphics.texture import Texture
@@ -51,11 +51,10 @@ class KivyCamera(Image):
         self.capture = capture
         Clock.schedule_interval(self.update, 1.0 / fps)
     
-    
     def update(self, dt):
-        ret, frame = self.capture.read()
+        
         while(True):
-            ret, frame = cap.read()
+            ret, frame = self.capture.read()
             cv2.imshow('frame',frame)
 
             print('here')

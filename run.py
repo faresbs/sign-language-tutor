@@ -68,7 +68,7 @@ if __name__ == '__main__':
 	parser.add_argument("--label_detection_path", default='weights/detection/hand.txt', type=str,
                     help="class labels of detection")
 
-	parser.add_argument("--class_path", default='weights/class/2018-07-21-16:10', type=str,
+	parser.add_argument("--class_path", default='weights/class', type=str,
                     help="path of the classification model")
 
 	parser.add_argument("--arch", default="vgg16", type=str,
