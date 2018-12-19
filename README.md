@@ -1,12 +1,19 @@
 # Sign Language Tutor
 
-An intelligent application to teach sign language to non-deaf users.
+An intelligent application to teach sign language to non-deaf users. The application have a recongnition system that recognise and evaluate the user's gestures.
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
+
+Ofcourse, you need to have python, here we are using python 3.6. So you need to installe python3.
+
+```
+sudo apt-get update
+sudo apt-get install python3.6
+```
 
 Install kivy dependencies for UI environment. 
 
@@ -26,11 +33,16 @@ Install kivy dependencies for UI environment.
 	$ sudo apt-get install python3-kivy
 ```
 
-Install denpendencies for the recognition system. 
+Install Pytorch a very cool machine learning library. 
 
 ```
+https://pytorch.org/
 ```
 
+Install opencv2.
+```
+sudo apt-get install python-opencv
+```
 
 ### Installing
 
@@ -50,49 +62,41 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
+## Run recognition system
+Recognition system is composed of two sub models: the first is for hand detection and the second one is for hand classification. 
 
-Explain how to run the automated tests for this system
+### Pretrained Models
+hand detection model (Mobilenetv1-ssd)
+URL: https://drive.google.com/file/d/1dhjs9WJmQIirgxC0u47DnUqynBAm3B7r/view?usp=sharing
 
-### Break down into end to end tests
+hand classification model (VGG16)
+URL: https://drive.google.com/file/d/12-SDr-KZ3I1tYXtsTYHScTxq2SS5Ig4j/view?usp=sharing
 
-Explain what these tests test and why
+## Running
+
+You need to download the models' files first. Place the classification model file (VGG16) under the weights/class folder. Place the detection model file (mobilenet-ssd) under the weights/detection folder.
+
+You can test out the recognition system directly wihout accessing to the application UI. It will run by default on GPU, but nevertheless, if you don't have the CUDA environment installed it will run on CPU. Keep in mind that it will run much smoother and faster on GPU.
 
 ```
-Give an example
+python3 run.py
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Kivy](https://kivy.org/#home) - Open source Python library for UI developement
+* [Pytorch](https://pytorch.org/) - ML library
+* [Opencv](https://opencv.org/) - Open Source Computer Vision Library
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+You are free to use this project or contribute that would be cool.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Fares Ben Slimane** - *recognition system* - [check my personal webpage](http://faresbs.github.io)
+* **Gaieth Dkhili** - *UI application*)
 
 ## License
 
@@ -100,7 +104,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* This project was made as part of the course of Intelligent Tutoring System.
+* The detection ssd model has been taken from qfgaohao (https://github.com/qfgaohao/pytorch-ssd).  
+
 
