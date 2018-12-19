@@ -1,0 +1,201 @@
+#:import COLOR kivy.utils.get_color_from_hex
+#:set RED "#F94A69"
+#:set GREEN "#06A5AB"
+
+<WrappedLabel@Label>:
+    size_hint_y: None
+    height: self.texture_size[1] + (self.texture_size[1]/2)
+    markup: True
+    font_name: "Roboto"
+
+<Button>:
+    font_name: "Roboto"
+    font_size: min(self.height, self.width) / 4
+    bold: True
+    background_normal: "./images/button_normal.png"
+    background_down: "./images/button_down.png"
+    background_color: COLOR("#4c0202")
+    border: (1, 1, 1, 1)
+
+
+<KivyTutorRoot>:
+    orientation: "vertical"
+    kivy_screen_manager: kivy_screen_manager
+    hmi_screen: hmi_screen
+
+    ActionBar:
+        ActionView:
+            ActionPrevious:
+                title: ""
+                with_previous: False
+            ActionOverflow:
+                ActionButton:
+                    text: "Settings"
+                    on_press: app.open_settings()
+
+    ScreenManager:
+        id: kivy_screen_manager
+        StartScreen:
+            name: "start_screen"
+        AboutScreen:
+            id: about_screen
+            name: "about_screen"
+        HmiScreen:
+            id: hmi_screen
+            name: "hmi_screen"
+
+<StartScreen@Screen>:
+    BoxLayout:
+        # Settings
+        orientation: "vertical"
+        padding: root.width * .04, root.height * .04
+        spacing: min(root.width, root.height) * .02
+
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: "hand.jpg"
+
+        WrappedLabel:
+            text: "[b]Hand Shape Detection[/b]"
+            font_size: min(root.height, root.width) / 10
+            
+
+        Button:
+            text: "Beginner"
+            on_release: app.root.changeScreen(self.text.lower())
+            background_color: 0, 0, 0, 0
+        Button:
+            text: "Novice"
+            on_release: app.root.changeScreen(self.text.lower())
+            background_color: 0, 0, 0, 0
+           
+        Button:
+            text: "About this App"
+            on_release: app.root.changeScreen(self.text.lower())
+            background_color: 0, 0, 0, 0
+
+<HmiScreen>:
+    question_text: question_text
+    answer_text: answer_text
+
+    question_image: question_image
+    image : image
+    button : button
+    insert_camera : insert_camera
+    
+    
+    BoxLayout:
+        orientation: "vertical"
+        padding: root.width * .02, root.height * .02
+        spacing: 10
+        WrappedLabel:
+            id: question_text
+            text: ""
+            font_size: min(root.height, root.width) / 10
+
+
+        BoxLayout:
+            orientation: "horizontal"
+            
+            WrappedLabel:
+                id: question_image
+                
+
+            Image:
+                id : image
+                pos_hint: {"right":0,'top':1}
+                source: ""
+                allow_stretch: False
+                keep_ratio: False
+                height: '50dp'
+            Button: 
+                id : button
+                text: "[b]Next[/b]"
+                idx: 1 
+                background_color: COLOR(RED)
+                markup: True
+                size_hint: .7, None
+                height: question_text.texture_size[1]
+                on_release: app.root.changeScreen_()
+
+                
+                
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            WrappedLabel:
+                id: insert_camera
+            Camera:
+                id: Cam0
+                resolution:(640, 480)   
+                play: False
+                pos_hint: {"x":0,'top':1}
+            Button:
+                text: "[b]Start[/b]"
+                background_color: COLOR(RED)
+                markup: True
+                height: question_text.texture_size[1]
+                size_hint: .7, None
+                on_press: Cam0.play = not Cam0.play
+                
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            WrappedLabel:
+                id: answer_text
+                text: "You start not me"
+                font_size: min(root.height, root.width) / 10
+            Button:
+                id: clearn_btn
+                text: "[b]Clear[/b]"
+                background_color: COLOR(RED)
+                markup: True
+                size_hint: .6, None
+                height: question_text.texture_size[1]
+                on_release: answer_text.text = "Try again"
+         
+        KeyPad:
+
+
+
+<HmiPopup>:
+    size_hint: .8, .8
+    title: "Result"
+    title_size: root.height * .05
+    seperator_color: COLOR(GREEN)
+    auto_dissmiss: False
+    message: message
+    wrapped_button: wrapped_button
+    BoxLayout:
+        orientation: "vertical"
+        padding: root.width * .02, root.height * .02
+        spacing: min(root.width, root.height) * .02
+        Label:
+            id: message
+            text: "sldkjfskldjflsdjfkljdslfj"
+            halign: "center"
+            markup: True
+            font_size: root.height / 10
+            text_size: self.width, None
+            center_y: .5
+        Button:
+            id: wrapped_button
+            text: "Close"
+            size_hint: 1, None
+            height: root.height / 8
+            on_release: root.dismiss()
+
+<AboutScreen@Screen>:
+    BoxLayout:
+        padding: root.width * .02, root.height * .02
+        Label:
+            text: app.getText()
+            halign: "center"
+            markup: True
+            font_size: root.height / 20
+            text_size: self.width, None
+            center_y: .5
+            on_ref_press: app.on_ref_press(*args)
