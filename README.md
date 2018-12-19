@@ -50,11 +50,17 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running
-
-### Run recognition system for hand detection + handshape classification
+## Run recognition system for hand detection + handshape classification
 Recognition system is composed of two sub models: the first is for hand detection and the second hand classification. 
 
+### Pretrained Models
+hand detection model (Mobilenetv1-ssd)
+URL: https://drive.google.com/file/d/1dhjs9WJmQIirgxC0u47DnUqynBAm3B7r/view?usp=sharing
+
+hand classification model (VGG16)
+URL: https://drive.google.com/file/d/12-SDr-KZ3I1tYXtsTYHScTxq2SS5Ig4j/view?usp=sharing
+
+## Running
 
 You can test out the recognition system directly wihout.
 
