@@ -1,6 +1,6 @@
 # Sign Language Tutor
 
-An intelligent application to teach sign language to non-deaf users.
+An intelligent application to teach sign language to non-deaf users. The application have a recongnition system that recognise and evaluate the user's gestures.
 
 ## Getting Started
 
