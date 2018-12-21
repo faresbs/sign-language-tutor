@@ -45,39 +45,8 @@ Window.clearcolor = get_color_from_hex("#300000")
 #)
 
 ################################################################################
-class KivyCamera(Image):
-    def __init__(self, capture, fps, **kwargs):
-        super(KivyCamera, self).__init__(**kwargs)
-        self.capture = capture
-        Clock.schedule_interval(self.update, 1.0 / fps)
-    
-    def update(self, dt):
-        
-        while(True):
-            ret, frame = self.capture.read()
-            cv2.imshow('frame',frame)
 
-            print('here')
-
-            #Call predictor
-            print (rec.predict(frame))
-
-            with open('hey.txt','a') as f: f.write(rec.predict(frame)+"\n")
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):#to get out from the infinite loop
-                break
-
-
-class CamApp(App):
-    def build(self):
-        self.capture = cv2.VideoCapture(0)
-
-        self.my_camera = KivyCamera(capture=self.capture, fps=30)
-        return self.my_camera
-
-    def on_stop(self):
-        #without this, app will not exit even if the window is closed
-        self.capture.release()
+     
 
 class KivyTutorRoot(BoxLayout):
     """
@@ -115,7 +84,7 @@ class KivyTutorRoot(BoxLayout):
             #inc = increment()
             self.hmi_screen.image.source = image
             #cam = Camera()
-            cam = CamApp()
+            #cam = CamApp()
             #camCapture()
             self.ids.kivy_screen_manager.current = "hmi_screen"
     
@@ -142,6 +111,30 @@ class KivyTutorRoot(BoxLayout):
             return True
         # No more screens to go back to
         return False
+
+    
+    def camCapture(self):
+        cap = cv2.VideoCapture(0)
+        fourcc = cv2.VideoWriter_fourcc(*'XVID') #pour enregistrer lw fichier codec
+
+        #load recognition models just one time
+        class_model, detect_model, args, class_names = rec.load_models()
+
+        while(True):
+            ret, frame = cap.read()
+            cv2.imshow('frame',frame)
+
+            
+            #Call predictor
+            print (rec.predict(frame, class_model, detect_model, args, class_names))
+
+            #with open('hey.txt','a') as f: f.write(rec.predict(frame)+"\n")
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):#to get out from the infinite loop
+                break
+        
+        cap.release()
+        cv2.destroyAllWindows()
 
 
 ################################################################################

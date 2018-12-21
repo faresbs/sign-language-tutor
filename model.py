@@ -56,8 +56,9 @@ def prep_image(image, isGray, input_dim, CUDA):
 	return img_
 
 
-#Takes the frame from the main app and run on it the recognition system
-def predict(frame):
+#Load the model just one time ar the start of the app
+def load_models():
+
 	parser = argparse.ArgumentParser(
 		description='Prediction')
 
@@ -92,6 +93,7 @@ def predict(frame):
 		class_names = joblib.load(file)
 
 	num_classes = len(class_names)
+
 
 	#if Gray images then number of channels is 1, if images are rgb then 3
 	if (args.isGray==True):
@@ -133,6 +135,13 @@ def predict(frame):
 	print("Detection Network successfully loaded.")
 
 
+	return class_model, predictor, args, class_names
+
+
+
+#Takes the frame from the main app and run on it the recognition system
+def predict(frame, class_model, predictor, args, class_names):
+	
 	#Empty label
 	empty='None'
 

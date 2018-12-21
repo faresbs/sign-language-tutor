@@ -128,18 +128,14 @@
             size_hint_y: None
             WrappedLabel:
                 id: insert_camera
-            Camera:
-                id: Cam0
-                resolution:(640, 480)   
-                play: False
-                pos_hint: {"x":0,'top':1}
+            
             Button:
                 text: "[b]Start[/b]"
                 background_color: COLOR(RED)
                 markup: True
                 height: question_text.texture_size[1]
                 size_hint: .7, None
-                on_press: Cam0.play = not Cam0.play
+                on_release: app.root.camCapture() 
                 
         BoxLayout:
             orientation: "horizontal"

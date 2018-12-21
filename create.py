@@ -1,5 +1,5 @@
 ##This is for creating new data images for sign language through sessions##
-##Work for both continued and static signs
+##Work for both temporal and static signs
 
 from vision.ssd.mobilenetv1_ssd import create_mobilenetv1_ssd, create_mobilenetv1_ssd_predictor
 
@@ -13,9 +13,6 @@ import argparse
 import torch 
 import torch.nn as nn
 
-#TO DO 
-#APPLY BOUNDING BOX IF NEEDED ELSE TAKE ONLY WHATS REQUIRED FOR THE SIGN
-
 
 if __name__ == "__main__":
 
@@ -27,6 +24,7 @@ if __name__ == "__main__":
 	fontColor = (255, 255, 0)
 	lineType = 2
 
+	#hand detection model
 	detection_path = 'weights/detection/mobilenet-v1-ssd-Epoch-200-Loss-3.0682483695802234.pth'
 	
 
@@ -140,6 +138,7 @@ if __name__ == "__main__":
 
 			#Predict bounding boxes 
 			if (args.auto):
+
 				boxes, labels, probs = predictor.predict(frame, 10, 0.4)
 
 				if(boxes.size(0) > 1):
@@ -213,12 +212,8 @@ if __name__ == "__main__":
 	#For temporal signs that require movement
 	else:
 
-		#how = input("Temporal/static signs (t/s)? ")
-
-		#sign that you'll use
-		sign = input("What's the sign that you'll be using ? ")
-
-		save = 'data/'+sl+'/'+date+'/temporal/'+sign
+		#where we want to save the image
+		save = 'data/'+args.sl+'/'+date+'/temporal/'+args.sign
 
 		#Save in the sign folder in the current session folder
 		date = dt.datetime.now().strftime("%Y-%m-%d")
@@ -238,28 +233,106 @@ if __name__ == "__main__":
 			# Capture frame-by-frame
 			ret, frame = video_capture.read()
 
-			#KEEP PRESSING k to save the frames in the folder 
-			k = cv2.waitKey(1)
-			if k == 32:
-				if not os.path.exists(save+'/'+str(folder_num)):
-					os.makedirs(save+'/'+str(folder_num))
 
-				frame_num = 0
-				while True:
-					#Save in lower fps rate so that we dont capture unecessary frames
-					k = cv2.waitKey(2000)
-					if k == 32:
-						cv2.imwrite(save+'/'+str(folder_num)+'/'+str(frame_num)+'.png', frame)
-						frame_num += 1
-						ret, frame = video_capture.read()
-					else:
-						folder_num += 1
-						break
+			#Predict bounding boxes 
+			if (args.auto):
+
+				#Detect boundaries of hand using a detection model
+			
+				#Loading detection model
+				detect_model = create_mobilenetv1_ssd(2, is_test=True)
+				detect_model.load(detection_path)
+				
+				# Device configuration
+				device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+				if device=='cpu':
+					print ("Running on CPU.")
+				elif device=='cuda:0':
+					print ("Running on GPU.")
+
+				predictor = create_mobilenetv1_ssd_predictor(detect_model, candidate_size=200, device=device)
+				print("Detection Network successfully loaded...")
+
+				boxes, labels, probs = predictor.predict(frame, 10, 0.4)
+
+				if(boxes.size(0) > 1):
+					print("DO not support many detection!!")
+					boxes = box = boxes[0, :]
+
+				elif(boxes.size(0) == 1):
+					boxes = boxes[0]
+
+				else:
+					continue
+
+				#Transform from tensor to int and extend the bbox
+				x1 = int(boxes[0]) - add_bbox
+				y1 = int(boxes[1]) - add_bbox
+				x2 = int(boxes[2]) + add_bbox
+				y2 = int(boxes[3]) + add_bbox		
+
+				#coords must not exceed the limit of the frame or be negative
+				if x1 < 0:
+					x1 = 0
+
+				if x2 > frame.shape[1]:
+					x2 = frame.shape[1]
+
+				if y1 < 0:
+					y1 = 0
+
+				if y2 > frame.shape[0]:
+					y2 = frame.shape[0]
+
+				frame = frame[y1:y2, x1:x2]
+
+				#KEEP PRESSING k to save the frames in the folder 
+				k = cv2.waitKey(1)
+				if k == 32:
+					if not os.path.exists(save+'/'+str(folder_num)):
+						os.makedirs(save+'/'+str(folder_num))
+
+					frame_num = 0
+					while True:
+						#Save in lower fps rate so that we dont capture unecessary frames
+						k = cv2.waitKey(2000)
+						if k == 32:
+							cv2.imwrite(save+'/'+str(folder_num)+'/'+str(frame_num)+'.png', frame)
+							frame_num += 1
+							ret, frame = video_capture.read()
+						else:
+							folder_num += 1
+							break
+			
+			cv2.rectangle(frame, (x1, y1), (x2, y2), fontColor, lineType)
+
+			else:
+
+				#KEEP PRESSING k to save the frames in the folder 
+				k = cv2.waitKey(1)
+				if k == 32:
+					if not os.path.exists(save+'/'+str(folder_num)):
+						os.makedirs(save+'/'+str(folder_num))
+
+					frame_num = 0
+					while True:
+						#Save in lower fps rate so that we dont capture unecessary frames
+						k = cv2.waitKey(2000)
+						if k == 32:
+							cv2.imwrite(save+'/'+str(folder_num)+'/'+str(frame_num)+'.png', frame)
+							frame_num += 1
+							ret, frame = video_capture.read()
+						else:
+							folder_num += 1
+							break
 
 
-			cv2.imshow("Video Stream", frame)
+			#Display results
+			frame = cv2.resize(frame, (window_size, window_size))
+			image = cv2.resize(image, (window_size, window_size))
+			cv2.imshow("Video Stream", np.hstack([frame, image]))
 
-			#KEPP PRESSING Q TO QUIT
+			#KEEP PRESSING Q TO QUIT
 			if cv2.waitKey(1) & 0xFF == ord('q'):
 				break
 
