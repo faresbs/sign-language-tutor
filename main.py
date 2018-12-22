@@ -30,7 +30,7 @@ import cv2
 
 
 #Recognition predictor
-import model as rec
+#import model as rec       à remettre
 
 #from camCapture import camCapture
 
@@ -68,7 +68,7 @@ class KivyTutorRoot(BoxLayout):
         self.finish = False
 
     def changeScreen(self, next_screen):
-       
+        #self.hmi_screen.question_text.text = "A"
         operations = "addition Novice Average Experienced".split()
         images = "1.png".split()
         question = None
@@ -81,7 +81,7 @@ class KivyTutorRoot(BoxLayout):
             self.ids.kivy_screen_manager.current = "about_screen"
 
         else:
-            self.hmi_screen.question_text.text = "Start with this sign dude!!!"
+            #self.hmi_screen.question_text.text = "A"
             
             idx = random.randint(0, len(images) - 1)     
             #image = images[idx]
@@ -95,16 +95,21 @@ class KivyTutorRoot(BoxLayout):
 
     def changeScreen_(self):
         images = "1.png 2.png 3.jpeg 4.png 5.jpg 6.jpg".split()
+        letters = "A B C D E F".split()
         idx = self.hmi_screen.button.idx 
         if idx < len(images):
             image = images[idx]
-            self.hmi_screen.image.source = image            
+            letter = letters[idx]
+            self.hmi_screen.image.source = image    
+            self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
         else:
             self.hmi_screen.button.idx = 0
             idx = self.hmi_screen.button.idx
             image = images[idx]
+            letter = letters[idx]
             self.hmi_screen.image.source = image
+            self.hmi_screen.question_image.text = letter 
             self.hmi_screen.button.idx = 1
     
 

@@ -78,7 +78,9 @@
 
 <HmiScreen>:
     question_text: question_text
-    answer_text: answer_text
+    
+
+
 
     question_image: question_image
     image : image
@@ -92,8 +94,9 @@
         spacing: 10
         WrappedLabel:
             id: question_text
-            text: ""
-            font_size: min(root.height, root.width) / 10
+            
+            
+            
 
 
         BoxLayout:
@@ -101,6 +104,9 @@
             
             WrappedLabel:
                 id: question_image
+                text: "A"
+                font_size: 180
+                
                 
 
             Image:
@@ -110,48 +116,49 @@
                 allow_stretch: False
                 keep_ratio: False
                 height: '50dp'
+
             Button: 
                 id : button
                 text: "[b]Next[/b]"
                 idx: 1 
                 background_color: COLOR(RED)
+
                 markup: True
-                size_hint: .7, None
+                size_hint: .7, .4
+
                 height: question_text.texture_size[1]
                 on_release: app.root.changeScreen_()
 
-                
-                
+
+
+
+
+       
+     
+
+
 
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
             WrappedLabel:
                 id: insert_camera
+                
             
             Button:
+                id : button2
                 text: "[b]Start[/b]"
                 background_color: COLOR(RED)
                 markup: True
-                height: question_text.texture_size[1]
-                size_hint: .7, None
-                on_release: app.root.camCapture() 
                 
-        BoxLayout:
-            orientation: "horizontal"
-            size_hint_y: None
-            WrappedLabel:
-                id: answer_text
-                text: "You start not me"
-                font_size: min(root.height, root.width) / 10
-            Button:
-                id: clearn_btn
-                text: "[b]Clear[/b]"
-                background_color: COLOR(RED)
-                markup: True
-                size_hint: .6, None
-                height: question_text.texture_size[1]
-                on_release: answer_text.text = "Try again"
+                size_hint: .35, .7
+                
+                on_release: 
+                    insert_camera.text = "Try again"
+                    app.root.camCapture()
+
+                
+
          
         KeyPad:
 
