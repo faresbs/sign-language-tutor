@@ -61,7 +61,7 @@ class KivyTutorRoot(BoxLayout):
         super(KivyTutorRoot, self).__init__(**kwargs)
         # List of previous screens
         self.screen_list = []
-        self.is_mix = True
+        self.is_mix = False
         self.hmi_popup = HmiPopup()
 
         self.current = 0
@@ -82,19 +82,18 @@ class KivyTutorRoot(BoxLayout):
         if(self.is_mix):
             shuffle(self.states)
             self.init_state = self.states[0]
+            self.hmi_screen.question_image.text = self.states[0]
         else:    
             self.states.sort()
             self.init_state = self.states[0]
+            self.hmi_screen.question_image.text = self.states[0]
+
 
 
     def changeScreen(self, next_screen):
        
         operations = "addition Novice Average Experienced".split()
         
-        #Start with the first state 'A' if not mix instead pick a random one
-        
-        
-
         question = None
 
         # If screen is not already in the list fo prevous screens
@@ -105,16 +104,9 @@ class KivyTutorRoot(BoxLayout):
             self.ids.kivy_screen_manager.current = "about_screen"
 
         else:
-            #self.hmi_screen.question_text.text = "A"
-            
-            #idx = random.randint(0, len(self.states) - 1)     
-            #image = images[idx]
-            #idx += 1  
-            print(self.init_state)
-            image = self.path+'/'+self.init_state+'/image.png'
-            #inc = increment()
-            self.hmi_screen.image.source = image
 
+            image = self.path+'/'+self.init_state+'/image.png'
+            self.hmi_screen.image.source = image
             self.ids.kivy_screen_manager.current = "hmi_screen"
     
 
@@ -135,6 +127,7 @@ class KivyTutorRoot(BoxLayout):
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
+            
         #Here if we exceed the len of states, we are done => finish == True 
         else:
             self.hmi_screen.button.idx = 0
