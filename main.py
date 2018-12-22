@@ -60,7 +60,13 @@ class KivyTutorRoot(BoxLayout):
         self.screen_list = []
         self.is_mix = False
         self.hmi_popup = HmiPopup()
+
+        self.current = 0
+        self.list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
         
+        self.result = None
+        self.finish = False
+
     def changeScreen(self, next_screen):
        
         operations = "addition Novice Average Experienced".split()
@@ -83,11 +89,10 @@ class KivyTutorRoot(BoxLayout):
             image = images[idx]
             #inc = increment()
             self.hmi_screen.image.source = image
-            #cam = Camera()
-            #cam = CamApp()
-            #camCapture()
+
             self.ids.kivy_screen_manager.current = "hmi_screen"
     
+
     def changeScreen_(self):
         images = "1.png 2.png 3.jpeg 4.png 5.jpg 6.jpg".split()
         idx = self.hmi_screen.button.idx 
@@ -101,7 +106,27 @@ class KivyTutorRoot(BoxLayout):
             image = images[idx]
             self.hmi_screen.image.source = image
             self.hmi_screen.button.idx = 1
-            
+    
+
+    #Transition to states using the result of the camCapture
+    def change_state(self):
+        root = App.get_running_app().root
+        
+        #print("answer: ", answer_text.text)
+        print (self.current)
+        print (self.result)
+        
+        #Show Yes message and go to the next state
+        if self.result == True:
+            root.hmi_popup.open('Yes')
+            self.result = None
+        
+        #Show the message No when we exceed the limit count
+        elif self.result == False:
+            root.hmi_popup.open('No')
+            self.result = None
+
+
     def onBackBtn(self):
         # Check if there are any screen to go back to
         if self.screen_list:
@@ -114,8 +139,11 @@ class KivyTutorRoot(BoxLayout):
 
     
     def camCapture(self):
+
+        count = 0
+
         cap = cv2.VideoCapture(0)
-        fourcc = cv2.VideoWriter_fourcc(*'XVID') #pour enregistrer lw fichier codec
+        #fourcc = cv2.VideoWriter_fourcc(*'XVID') #pour enregistrer lw fichier codec
 
         #load recognition models just one time
         class_model, detect_model, args, class_names = rec.load_models()
@@ -123,15 +151,46 @@ class KivyTutorRoot(BoxLayout):
         while(True):
             ret, frame = cap.read()
             cv2.imshow('frame',frame)
-
             
             #Call predictor
-            print (rec.predict(frame, class_model, detect_model, args, class_names))
+            prediction = rec.predict(frame, class_model, detect_model, args, class_names)
 
-            #with open('hey.txt','a') as f: f.write(rec.predict(frame)+"\n")
+            count += 1
 
+            # HOW TO SAFELY CLOSE THE CAM WINDOW using a button not q
             if cv2.waitKey(1) & 0xFF == ord('q'):#to get out from the infinite loop
                 break
+
+            if (prediction == self.list[self.current]):
+                
+                #No need to close windows
+                #cap.release()
+                #cv2.destroyAllWindows()
+
+                self.current += 1
+                self.result = True
+                print ('OK')
+
+
+            if(count >= 1000):
+                self.result = False
+
+                #cap.release()
+                #cv2.destroyAllWindows()
+
+
+            #Show Yes message and go to the next state
+            if self.result == True:
+                self.hmi_popup.open('Yes')
+                self.result = None
+            
+            #Show the message No when we exceed the limit count
+            elif self.result == False:
+                self.hmi_popup.open('No')
+                self.result = None
+
+                
+
         
         cap.release()
         cv2.destroyAllWindows()
@@ -159,33 +218,39 @@ class HmiPopup(Popup):
     def __init__(self, *args, **kwargs):
         super(HmiPopup, self).__init__(*args, **kwargs)
     
-    def open(self, correct=True):
+    def open(self, answer):
         # If answer is correct take off button if its visible
-        if correct:
+        if answer == 'Yes':
             if self.wrapped_button in self.content.children:
                 self.content.remove_widget(self.wrapped_button)
         # If answers is wrong, display button if not visible
-        else:
+        elif answer == 'No':
             if self.wrapped_button not in self.content.children:
                 self.content.add_widget(self.wrapped_button)
 
+
         # Set up text message
-        self.message.text = self._prep_text(correct)
+        self.message.text = self._prep_text(answer)
 
         # display popup
         super(HmiPopup, self).open()
-        if correct:
-            Clock.schedule_once(self.dismiss, 1)
+        if answer == 'Yes':
+            #pop up vanish after n sec 
+            Clock.schedule_once(self.dismiss, 0.5)
 
-    def _prep_text(self, correct):
-        if correct:
+    def _prep_text(self, answer):
+        if answer == 'Yes':
             index = random.randint(0, len(self.GOOD_LIST) - 1)
             return self.GOOD.format(self.GOOD_LIST[index])
-        else:
+        elif answer == 'No':
             index = random.randint(0, len(self.BAD_LIST) - 1)
             hmi_screen = App.get_running_app().root.hmi_screen
             return self.BAD.format(self.BAD_LIST[index])
 
+        else:
+            return 'Get to the next letter!'
+            
+            
 ################################################################################
 class KeyPad(GridLayout):
     
@@ -197,7 +262,7 @@ class KeyPad(GridLayout):
         self.createButtons()
 
     def createButtons(self):
-        _list = ["Yes", "No", "GO!"]
+        _list = ["Yes", "No", "Next!"]
         for num in _list:
             self.add_widget(Button(text=str(num), on_release=self.onBtnPress))
                        
@@ -221,11 +286,36 @@ class KeyPad(GridLayout):
             root = App.get_running_app().root
             print("answer: ", answer_text.text)
             if answer_text.text == "Yes":
+                root.hmi_popup.open('Yes')
+            elif answer_text.text == "No":
+                root.hmi_popup.open('No')
+            else:
+                root.hmi_popup.open("Next")
+
+            # Clear the answer text
+            answer_text.text = ""
+
+
+    def getResult(self):
+            
+        hmi_screen = App.get_running_app().root.ids.hmi_screen
+
+        answer_text = hmi_screen.answer_text
+
+        
+        #answer_text.text in this case will have yes or no as value 
+        answer_text.text = btn.text
+
+        if  answer_text.text != "": 
+            root = App.get_running_app().root
+            print("answer: ", answer_text.text)
+            if answer_text.text == "Yes":
                 root.hmi_popup.open(True)
             else:
                 root.hmi_popup.open(False)
             # Clear the answer text
             answer_text.text = ""
+
 
 ################################################################################
 class KivyTutorApp(App):

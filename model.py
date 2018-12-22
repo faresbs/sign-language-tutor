@@ -210,7 +210,7 @@ def predict(frame, class_model, predictor, args, class_names):
 		else:
 			prediction = empty
 
-		print(prediction)
+		#print(prediction)
 		return prediction
 
 
