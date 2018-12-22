@@ -1,6 +1,7 @@
 #:import COLOR kivy.utils.get_color_from_hex
 #:set RED "#F94A69"
 #:set GREEN "#06A5AB"
+#:set GREY "#696969"
 
 <WrappedLabel@Label>:
     size_hint_y: None
@@ -148,7 +149,7 @@
             Button:
                 id : button2
                 text: "[b]Start[/b]"
-                background_color: COLOR(RED)
+                background_color: COLOR(GREY)
                 markup: True
                 
                 size_hint: .35, .7

@@ -70,7 +70,7 @@ class KivyTutorRoot(BoxLayout):
         #To campare with prediction result
         self.list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
         
-        self.result = None
+        self.finish = False
         self.score = 0
 
         #Recover alphabet states: (folders where each has the corresponding letter and image/gif)
@@ -121,6 +121,7 @@ class KivyTutorRoot(BoxLayout):
 
         idx = self.hmi_screen.button.idx 
         print(idx)
+
         if idx < len(self.states):
             letter = self.states[idx]
             print(letter)
@@ -133,6 +134,10 @@ class KivyTutorRoot(BoxLayout):
         else:
             self.hmi_popup.open('Done', self.score)
             print('done!')
+
+            #Reset loop
+            self.current = 0
+            self.hmi_screen.button.idx = 0
 
 
         #This is to make it loop
@@ -197,17 +202,7 @@ class KivyTutorRoot(BoxLayout):
 
                 break
 
-
-            #Show Yes message and go to the next state
-            #if self.result == True:
-            #    self.hmi_popup.open('Yes')
-            #    self.result = None
-            
-            #Show the message No when we exceed the limit count
-            #elif self.result == False:
-            #    self.hmi_popup.open('No')
-            #    self.result = None
-        
+        #Destroy window cam
         cap.release()
         cv2.destroyAllWindows()
 
@@ -268,7 +263,8 @@ class HmiPopup(Popup):
             return self.BAD.format(self.BAD_LIST[index])
 
         elif answer== 'Done':
-            if(score >= 0):
+            print(score)
+            if(score > 0):
                 return 'You did them all, GOOD JOB!\n'+'Score: '+str(score)
             else:
                 return 'Maybe if you try again, you get them all right this time :)'
@@ -367,6 +363,21 @@ class KivyTutorApp(App):
             self.root.hmi_screen.max_num = int(value)
         elif key == "lower_num":
             self.root.hmi_screen.min_num = int(value)
+
+# HOW TO RESET THE APP
+def reset():
+    import kivy.core.window as window
+    from kivy.base import EventLoop
+    
+    if not EventLoop.event_listeners:
+        from kivy.cache import Cache
+        
+    window.Window = window.core_select_lib('window', window.window_impl, True)
+    Cache.print_usage()
+        
+    for cat in Cache._categories:
+        Cache._objects[cat] = {}
+
 
 if __name__ == '__main__':
     KivyTutorApp().run()
