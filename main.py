@@ -106,16 +106,26 @@ class KivyTutorRoot(BoxLayout):
         else:
            
             #Is the states order in the alphabetical order or not, depends on the difficulty
-            
+
             if (next_screen == 'challenge'):
                 shuffle(self.states)
                 self.init_state = self.states[0]
                 self.hmi_screen.question_image.text = self.states[0]
 
+                #Reset
+                self.current = 0
+                self.hmi_screen.button.idx = 0
+                self.score = 0
+
             if (next_screen == 'learn'):
                 self.states.sort()
                 self.init_state = self.states[0]
                 self.hmi_screen.question_image.text = self.states[0]
+
+                #Reset
+                self.current = 0
+                self.hmi_screen.button.idx = 0
+                self.score = 0
 
 
             image = self.path+'/'+self.init_state+'/image.png'
