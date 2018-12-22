@@ -71,7 +71,11 @@ class KivyTutorRoot(BoxLayout):
         super(KivyTutorRoot, self).__init__(**kwargs)
         # List of previous screens
         self.screen_list = []
-        self.is_mix = True
+        
+        #Is the states order in the alphabetical order or not
+        #NO NEED
+        self.is_mix = False
+        
         self.hmi_popup = HmiPopup()
         #self.myImage = MyImage(Image)
 
@@ -80,7 +84,6 @@ class KivyTutorRoot(BoxLayout):
         #To campare with prediction result
         self.list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
         
-        self.finish = False
         self.score = 0
 
         #Recover alphabet states: (folders where each has the corresponding letter and image/gif)
@@ -89,23 +92,9 @@ class KivyTutorRoot(BoxLayout):
 
         self.init_state = 'A'
 
-        #Sort the states
-        if(self.is_mix):
-            shuffle(self.states)
-            self.init_state = self.states[0]
-            self.hmi_screen.question_image.text = self.states[0]
-        else:    
-            self.states.sort()
-            self.init_state = self.states[0]
-            self.hmi_screen.question_image.text = self.states[0]
-
 
 
     def changeScreen(self, next_screen):
-       
-        operations = "addition Novice Average Experienced".split()
-        
-        question = None
 
         # If screen is not already in the list fo prevous screens
         if self.ids.kivy_screen_manager.current not in self.screen_list:
@@ -115,6 +104,19 @@ class KivyTutorRoot(BoxLayout):
             self.ids.kivy_screen_manager.current = "about_screen"
 
         else:
+           
+            #Is the states order in the alphabetical order or not, depends on the difficulty
+            
+            if (next_screen == 'challenge'):
+                shuffle(self.states)
+                self.init_state = self.states[0]
+                self.hmi_screen.question_image.text = self.states[0]
+
+            if (next_screen == 'learn'):
+                self.states.sort()
+                self.init_state = self.states[0]
+                self.hmi_screen.question_image.text = self.states[0]
+
 
             image = self.path+'/'+self.init_state+'/image.png'
             self.hmi_screen.image.source = image

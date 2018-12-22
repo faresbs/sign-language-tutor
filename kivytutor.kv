@@ -46,6 +46,7 @@
             name: "hmi_screen"
 
 <StartScreen@Screen>:
+
     BoxLayout:
         # Settings
         orientation: "vertical"
@@ -64,11 +65,11 @@
             
 
         Button:
-            text: "Beginner"
+            text: "Learn"
             on_release: app.root.changeScreen(self.text.lower())
             background_color: 0, 0, 0, 0
         Button:
-            text: "Novice"
+            text: "Challenge"
             on_release: app.root.changeScreen(self.text.lower())
             background_color: 0, 0, 0, 0
            
