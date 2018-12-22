@@ -50,6 +50,15 @@ Window.clearcolor = get_color_from_hex("#300000")
 
 ################################################################################
 
+#For Gifs
+class MyImage(Image):
+        frame_counter = 0
+        frame_number = 7 # my example GIF had 2 frames
+
+        def on_texture(self, instance, value):     
+            if self.frame_counter == self.frame_number + 1:
+                self._coreimage.anim_reset(False)
+            self.frame_counter += 1
      
 
 class KivyTutorRoot(BoxLayout):
@@ -64,6 +73,7 @@ class KivyTutorRoot(BoxLayout):
         self.screen_list = []
         self.is_mix = True
         self.hmi_popup = HmiPopup()
+        #self.myImage = MyImage(Image)
 
         self.current = 0
         
@@ -111,6 +121,7 @@ class KivyTutorRoot(BoxLayout):
             self.ids.kivy_screen_manager.current = "hmi_screen"
     
 
+
     def changeScreen_(self):
 
 
@@ -124,8 +135,11 @@ class KivyTutorRoot(BoxLayout):
 
         if idx < len(self.states):
             letter = self.states[idx]
-            print(letter)
-            image = self.path+'/'+letter+'/image.png'
+
+            #image = self.path+'/'+letter+'/image.png'
+            #image = self.myImage(source = self.path+'/'+letter+"/gif.gif")
+            image = self.path+'/'+letter+"/gif.gif"
+            
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
