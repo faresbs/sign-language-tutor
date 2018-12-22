@@ -30,6 +30,7 @@ from kivy.graphics.texture import Texture
 import cv2
 import os
 import sys
+from random import shuffle
 
 #Recognition predictor
 #import model as rec       à remettre
@@ -60,10 +61,12 @@ class KivyTutorRoot(BoxLayout):
         super(KivyTutorRoot, self).__init__(**kwargs)
         # List of previous screens
         self.screen_list = []
-        self.is_mix = False
+        self.is_mix = True
         self.hmi_popup = HmiPopup()
 
         self.current = 0
+        
+        #Same as self.states (BUT prediction returns miniscule = change state to min)
         self.list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
         
         self.result = None
@@ -73,15 +76,25 @@ class KivyTutorRoot(BoxLayout):
         self.path = 'states'
         self.states = os.listdir(self.path)
 
+        self.init_state = 'A'
+
         #Sort the states
-        self.states.sort()
+        if(self.is_mix):
+            shuffle(self.states)
+            self.init_state = self.states[0]
+        else:    
+            self.states.sort()
+            self.init_state = self.states[0]
 
 
     def changeScreen(self, next_screen):
        
         operations = "addition Novice Average Experienced".split()
         
-        init_state = self.states[0]
+        #Start with the first state 'A' if not mix instead pick a random one
+        
+        
+
         question = None
 
         # If screen is not already in the list fo prevous screens
@@ -94,10 +107,11 @@ class KivyTutorRoot(BoxLayout):
         else:
             #self.hmi_screen.question_text.text = "A"
             
-            idx = random.randint(0, len(self.states) - 1)     
+            #idx = random.randint(0, len(self.states) - 1)     
             #image = images[idx]
             #idx += 1  
-            image = self.path+'/'+init_state+'/image.png'
+            print(self.init_state)
+            image = self.path+'/'+self.init_state+'/image.png'
             #inc = increment()
             self.hmi_screen.image.source = image
 
@@ -121,6 +135,7 @@ class KivyTutorRoot(BoxLayout):
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
+        #Here if we exceed the len of states, we are done => finish == True 
         else:
             self.hmi_screen.button.idx = 0
             idx = self.hmi_screen.button.idx
