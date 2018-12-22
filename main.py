@@ -31,9 +31,10 @@ import cv2
 import os
 import sys
 from random import shuffle
+import time
 
 #Recognition predictor
-#import model as rec       à remettre
+import model as rec   
 
 #from camCapture import camCapture
 
@@ -61,16 +62,16 @@ class KivyTutorRoot(BoxLayout):
         super(KivyTutorRoot, self).__init__(**kwargs)
         # List of previous screens
         self.screen_list = []
-        self.is_mix = False
+        self.is_mix = True
         self.hmi_popup = HmiPopup()
 
         self.current = 0
         
-        #Same as self.states (BUT prediction returns miniscule = change state to min)
+        #To campare with prediction result
         self.list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
         
         self.result = None
-        self.finish = False
+        self.score = 0
 
         #Recover alphabet states: (folders where each has the corresponding letter and image/gif)
         self.path = 'states'
@@ -127,36 +128,23 @@ class KivyTutorRoot(BoxLayout):
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
-            
+
         #Here if we exceed the len of states, we are done => finish == True 
         else:
-            self.hmi_screen.button.idx = 0
-            idx = self.hmi_screen.button.idx
-            letter = self.states[idx]
-            image = self.path+'/'+letter+'/image.png'
-            self.hmi_screen.image.source = image
-            self.hmi_screen.question_image.text = letter 
-            self.hmi_screen.button.idx = 1
+            self.hmi_popup.open('Done', self.score)
+            print('done!')
+
+
+        #This is to make it loop
+        #else:
+        #    self.hmi_screen.button.idx = 0
+        #    idx = self.hmi_screen.button.idx
+        #    letter = self.states[idx]
+        #    image = self.path+'/'+letter+'/image.png'
+        #    self.hmi_screen.image.source = image
+        #    self.hmi_screen.question_image.text = letter 
+        #    self.hmi_screen.button.idx = 1
     
-
-    #Transition to states using the result of the camCapture
-    def change_state(self):
-        root = App.get_running_app().root
-        
-        #print("answer: ", answer_text.text)
-        print (self.current)
-        print (self.result)
-        
-        #Show Yes message and go to the next state
-        if self.result == True:
-            root.hmi_popup.open('Yes')
-            self.result = None
-        
-        #Show the message No when we exceed the limit count
-        elif self.result == False:
-            root.hmi_popup.open('No')
-            self.result = None
-
 
     def onBackBtn(self):
         # Check if there are any screen to go back to
@@ -193,35 +181,32 @@ class KivyTutorRoot(BoxLayout):
                 break
 
             if (prediction == self.list[self.current]):
-                
-                #No need to close windows
-                #cap.release()
-                #cv2.destroyAllWindows()
 
                 self.current += 1
-                self.result = True
-                print ('OK')
+                #increase score
+                self.score += 100
+                self.hmi_popup.open('Yes', self.score)
 
+                break
 
-            if(count >= 1000):
-                self.result = False
+            #If exceed count limit then display error message
+            if(count >= 200):
+                #decrease score
+                self.score -= 10
+                self.hmi_popup.open('No', self.score)
 
-                #cap.release()
-                #cv2.destroyAllWindows()
+                break
 
 
             #Show Yes message and go to the next state
-            if self.result == True:
-                self.hmi_popup.open('Yes')
-                self.result = None
+            #if self.result == True:
+            #    self.hmi_popup.open('Yes')
+            #    self.result = None
             
             #Show the message No when we exceed the limit count
-            elif self.result == False:
-                self.hmi_popup.open('No')
-                self.result = None
-
-                
-
+            #elif self.result == False:
+            #    self.hmi_popup.open('No')
+            #    self.result = None
         
         cap.release()
         cv2.destroyAllWindows()
@@ -249,7 +234,7 @@ class HmiPopup(Popup):
     def __init__(self, *args, **kwargs):
         super(HmiPopup, self).__init__(*args, **kwargs)
     
-    def open(self, answer):
+    def open(self, answer, score):
         # If answer is correct take off button if its visible
         if answer == 'Yes':
             if self.wrapped_button in self.content.children:
@@ -258,28 +243,35 @@ class HmiPopup(Popup):
         elif answer == 'No':
             if self.wrapped_button not in self.content.children:
                 self.content.add_widget(self.wrapped_button)
+        elif answer == 'Done':
+            if self.wrapped_button not in self.content.children:
+                self.content.add_widget(self.wrapped_button)
 
 
         # Set up text message
-        self.message.text = self._prep_text(answer)
+        self.message.text = self._prep_text(answer, score)
 
         # display popup
         super(HmiPopup, self).open()
         if answer == 'Yes':
             #pop up vanish after n sec 
-            Clock.schedule_once(self.dismiss, 0.5)
+            Clock.schedule_once(self.dismiss, 10)
 
-    def _prep_text(self, answer):
+    def _prep_text(self, answer, score):
         if answer == 'Yes':
             index = random.randint(0, len(self.GOOD_LIST) - 1)
             return self.GOOD.format(self.GOOD_LIST[index])
         elif answer == 'No':
+            #Dont do random : Almost -> try again -> you got this -> try with the next letter
             index = random.randint(0, len(self.BAD_LIST) - 1)
             hmi_screen = App.get_running_app().root.hmi_screen
             return self.BAD.format(self.BAD_LIST[index])
 
-        else:
-            return 'Get to the next letter!'
+        elif answer== 'Done':
+            if(score >= 0):
+                return 'You did them all, GOOD JOB!\n'+'Score: '+str(score)
+            else:
+                return 'Maybe if you try again, you get them all right this time :)'
             
             
 ################################################################################
@@ -290,12 +282,12 @@ class KeyPad(GridLayout):
         super(KeyPad, self).__init__(*args, **kwargs)
         self.cols = 3
         self.spacing = 10
-        self.createButtons()
+        #self.createButtons()
 
-    def createButtons(self):
-        _list = ["Yes", "No", "Next!"]
-        for num in _list:
-            self.add_widget(Button(text=str(num), on_release=self.onBtnPress))
+    #def createButtons(self):
+        #_list = ["Yes", "No", "Next!"]
+        #for num in _list:
+            #self.add_widget(Button(text=str(num), on_release=self.onBtnPress))
                        
     def onBtnPress(self, btn):
         hmi_screen = App.get_running_app().root.ids.hmi_screen
@@ -321,31 +313,11 @@ class KeyPad(GridLayout):
             elif answer_text.text == "No":
                 root.hmi_popup.open('No')
             else:
-                root.hmi_popup.open("Next")
+                root.hmi_popup.open("Done")
 
             # Clear the answer text
             answer_text.text = ""
 
-
-    def getResult(self):
-            
-        hmi_screen = App.get_running_app().root.ids.hmi_screen
-
-        answer_text = hmi_screen.answer_text
-
-        
-        #answer_text.text in this case will have yes or no as value 
-        answer_text.text = btn.text
-
-        if  answer_text.text != "": 
-            root = App.get_running_app().root
-            print("answer: ", answer_text.text)
-            if answer_text.text == "Yes":
-                root.hmi_popup.open(True)
-            else:
-                root.hmi_popup.open(False)
-            # Clear the answer text
-            answer_text.text = ""
 
 
 ################################################################################
