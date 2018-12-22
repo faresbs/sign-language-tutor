@@ -26,8 +26,10 @@ from arithmetic import Arithmetic, json_settings
 
 from kivy.uix.image import Image
 from kivy.graphics.texture import Texture
-import cv2
 
+import cv2
+import os
+import sys
 
 #Recognition predictor
 #import model as rec       à remettre
@@ -67,10 +69,19 @@ class KivyTutorRoot(BoxLayout):
         self.result = None
         self.finish = False
 
+        #Recover alphabet states: (folders where each has the corresponding letter and image/gif)
+        self.path = 'states'
+        self.states = os.listdir(self.path)
+
+        #Sort the states
+        self.states.sort()
+
+
     def changeScreen(self, next_screen):
-        #self.hmi_screen.question_text.text = "A"
+       
         operations = "addition Novice Average Experienced".split()
-        images = "1.png".split()
+        
+        init_state = self.states[0]
         question = None
 
         # If screen is not already in the list fo prevous screens
@@ -83,10 +94,10 @@ class KivyTutorRoot(BoxLayout):
         else:
             #self.hmi_screen.question_text.text = "A"
             
-            idx = random.randint(0, len(images) - 1)     
+            idx = random.randint(0, len(self.states) - 1)     
             #image = images[idx]
             #idx += 1  
-            image = images[idx]
+            image = self.path+'/'+init_state+'/image.png'
             #inc = increment()
             self.hmi_screen.image.source = image
 
@@ -94,20 +105,27 @@ class KivyTutorRoot(BoxLayout):
     
 
     def changeScreen_(self):
-        images = "1.png 2.png 3.jpeg 4.png 5.jpg 6.jpg".split()
-        letters = "A B C D E F".split()
+
+
+        if (len(self.states) == 0):
+            print ("There are no folders!")
+            sys.quit()
+
+
         idx = self.hmi_screen.button.idx 
-        if idx < len(images):
-            image = images[idx]
-            letter = letters[idx]
+        print(idx)
+        if idx < len(self.states):
+            letter = self.states[idx]
+            print(letter)
+            image = self.path+'/'+letter+'/image.png'
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
         else:
             self.hmi_screen.button.idx = 0
             idx = self.hmi_screen.button.idx
-            image = images[idx]
-            letter = letters[idx]
+            letter = self.states[idx]
+            image = self.path+'/'+letter+'/image.png'
             self.hmi_screen.image.source = image
             self.hmi_screen.question_image.text = letter 
             self.hmi_screen.button.idx = 1
