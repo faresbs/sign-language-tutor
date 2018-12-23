@@ -151,7 +151,6 @@ class KivyTutorRoot(BoxLayout):
                     self.hmi_screen.interact_button.text = ""
 
 
-            ## HERE WE WRITE BRIEF TUTORIALS (QUIDE)
 
             #image = self.path+'/'+self.init_state+'/image.png'
             image = self.path+'/'+self.init_state+"/gif.gif"
@@ -170,8 +169,6 @@ class KivyTutorRoot(BoxLayout):
 
         idx = self.hmi_screen.button.idx 
         self.current = idx
-
-        print(self.states[self.current])
 
         if idx < len(self.states):
             letter = self.states[idx]
@@ -292,7 +289,8 @@ class KivyTutorRoot(BoxLayout):
                 #Go to the next dialogue states
                 #init dialogue is done just one time during the app launch 
                 self.init_dialogue = False
-            self.hmi_screen.interact_button.text = ""
+                
+            self.hmi_screen.interact_button.text = "Click to show description!"
 
 
         
