@@ -36,6 +36,9 @@ import time
 #Recognition predictor
 import model as rec   
 
+#For music 
+from kivy.core.audio import SoundLoader
+
 #from camCapture import camCapture
 
 # Color the background
@@ -53,7 +56,7 @@ Window.clearcolor = get_color_from_hex("#300000")
 #For Gifs
 class MyImage(Image):
         frame_counter = 0
-        frame_number = 7 # my example GIF had 2 frames
+        frame_number = 7 # depends on the gif frames
 
         def on_texture(self, instance, value):     
             if self.frame_counter == self.frame_number + 1:
@@ -105,8 +108,7 @@ class KivyTutorRoot(BoxLayout):
 
         else:
            
-            #Is the states order in the alphabetical order or not, depends on the difficulty
-
+            #Is the states order in the alphabetical order or not, depends on 
             if (next_screen == 'challenge'):
                 shuffle(self.states)
                 self.init_state = self.states[0]
@@ -128,7 +130,10 @@ class KivyTutorRoot(BoxLayout):
                 self.score = 0
 
 
-            image = self.path+'/'+self.init_state+'/image.png'
+            ## HERE WE WRITE BRIEF TUTORIALS (QUIDE)
+
+            #image = self.path+'/'+self.init_state+'/image.png'
+            image = self.path+'/'+self.init_state+"/gif.gif"
             self.hmi_screen.image.source = image
             self.ids.kivy_screen_manager.current = "hmi_screen"
     
@@ -165,16 +170,6 @@ class KivyTutorRoot(BoxLayout):
             self.current = 0
             self.hmi_screen.button.idx = 0
 
-
-        #This is to make it loop
-        #else:
-        #    self.hmi_screen.button.idx = 0
-        #    idx = self.hmi_screen.button.idx
-        #    letter = self.states[idx]
-        #    image = self.path+'/'+letter+'/image.png'
-        #    self.hmi_screen.image.source = image
-        #    self.hmi_screen.question_image.text = letter 
-        #    self.hmi_screen.button.idx = 1
     
 
     def onBackBtn(self):
@@ -221,7 +216,7 @@ class KivyTutorRoot(BoxLayout):
                 break
 
             #If exceed count limit then display error message
-            if(count >= 200):
+            if(count >= 50):
                 #decrease score
                 self.score -= 10
                 self.hmi_popup.open('No', self.score)
@@ -244,10 +239,18 @@ class HmiScreen(Screen, Arithmetic):
 class HmiPopup(Popup):
     
     #Popup for telling user whether he got it right or wrong
-    GOOD = "{} :D"
-    BAD = "{} Try again!!"
-    GOOD_LIST = "Awesome! Amazing! Excellent! Correct!".split()
-    BAD_LIST = ["Almost!", "Close!", "Sorry!", "False!"]
+    GOOD = "{}\n:)"
+    BAD = "{}\nTry again!!"
+
+    #good_index = 0
+    bad_index = -1
+
+    #Read response messages from txt files
+    with open('good_response.txt') as f:
+        GOOD_LIST = f.read().splitlines()
+
+    with open('bad_response.txt') as f:
+        BAD_LIST = f.read().splitlines()
 
     message = ObjectProperty()
     wrapped_button = ObjectProperty()
@@ -279,19 +282,22 @@ class HmiPopup(Popup):
             Clock.schedule_once(self.dismiss, 10)
 
     def _prep_text(self, answer, score):
+
+        if(self.bad_index > len(self.BAD_LIST)-1):
+            bad_index = -1
+
         if answer == 'Yes':
             index = random.randint(0, len(self.GOOD_LIST) - 1)
             return self.GOOD.format(self.GOOD_LIST[index])
         elif answer == 'No':
-            #Dont do random : Almost -> try again -> you got this -> try with the next letter
-            index = random.randint(0, len(self.BAD_LIST) - 1)
+            #Dont do random
             hmi_screen = App.get_running_app().root.hmi_screen
-            return self.BAD.format(self.BAD_LIST[index])
+            self.bad_index += 1
+            return self.BAD.format(self.BAD_LIST[self.bad_index])
 
         elif answer== 'Done':
-            print(score)
             if(score > 0):
-                return 'You did them all, GOOD JOB!\n'+'Score: '+str(score)
+                return 'You did it, GOOD JOB!\n'+'Score: '+str(score)
             else:
                 return 'Maybe if you try again, you get them all right this time :)'
             
@@ -357,6 +363,22 @@ class KivyTutorApp(App):
             return self.root.onBackBtn()
 
     def build(self):
+
+        #TO DO: SETTINGS MUISC : VOLUME + MUTE
+
+        #Add background music
+        sound = SoundLoader.load('periwinkle.mp3')
+        if sound:
+            print("Sound found at %s" % sound.source)
+            print("Sound is %.3f seconds" % sound.length)
+            
+            #loop the background music
+            sound.loop = True
+            #100% volume
+            sound.volume = 1
+
+            sound.play()
+
         return KivyTutorRoot()
 
     def getText(self):
@@ -378,31 +400,20 @@ class KivyTutorApp(App):
         webbrowser.open(_dict[ref])
 
     def build_config(self, config):
-        config.setdefaults("General", {"lower_num": 0, "upper_num": 10})
+        config.setdefaults("General", {"volume music": 0, "upper_num": 10, "Mute_Music": False})
 
     def build_settings(self, settings):
         settings.add_json_panel("Kivy Hmi Tutor", self.config,
                                 data=json_settings)
 
     def on_config_change(self, config, section, key, value):
-        if key == "upper_num":
+        if key == "volume":
             self.root.hmi_screen.max_num = int(value)
         elif key == "lower_num":
             self.root.hmi_screen.min_num = int(value)
 
-# HOW TO RESET THE APP
-def reset():
-    import kivy.core.window as window
-    from kivy.base import EventLoop
-    
-    if not EventLoop.event_listeners:
-        from kivy.cache import Cache
-        
-    window.Window = window.core_select_lib('window', window.window_impl, True)
-    Cache.print_usage()
-        
-    for cat in Cache._categories:
-        Cache._objects[cat] = {}
+        elif key == "Mute_Music":
+            self.root.hmi_screen.max_num = bool(value)
 
 
 if __name__ == '__main__':
