@@ -53,6 +53,7 @@ Window.clearcolor = get_color_from_hex("#300000")
 
 ################################################################################
 
+#NO NEED FOR NOW
 #For Gifs
 class MyImage(Image):
         frame_counter = 0
@@ -95,6 +96,15 @@ class KivyTutorRoot(BoxLayout):
 
         self.init_state = 'A'
 
+        #Dialogue to interact with the user
+        self.path_diaologue = 'dialogue'
+        self.dialogues = os.listdir(self.path_diaologue)
+
+        self.init_dialogue = True
+
+        #Check if there is a next dialogue in the current state
+        self.dialogue_idx  = 0
+
 
 
     def changeScreen(self, next_screen):
@@ -108,16 +118,22 @@ class KivyTutorRoot(BoxLayout):
 
         else:
            
-            #Is the states order in the alphabetical order or not, depends on 
+            #Is the states order in the alphabetical order or not, depends on mode
             if (next_screen == 'challenge'):
                 shuffle(self.states)
                 self.init_state = self.states[0]
                 self.hmi_screen.question_image.text = self.states[0]
 
                 #Reset
-                self.current = 0
                 self.hmi_screen.button.idx = 0
                 self.score = 0
+                self.dialogue_idx  = 0
+                self.current = 0
+
+                #When you change from modes
+                if(self.init_dialogue == False):
+                    self.hmi_screen.interact_button.text = ""
+
 
             if (next_screen == 'learn'):
                 self.states.sort()
@@ -125,9 +141,14 @@ class KivyTutorRoot(BoxLayout):
                 self.hmi_screen.question_image.text = self.states[0]
 
                 #Reset
-                self.current = 0
                 self.hmi_screen.button.idx = 0
                 self.score = 0
+                self.dialogue_idx  = 0
+                self.current = 0
+
+                #When you change from modes
+                if(self.init_dialogue == False):
+                    self.hmi_screen.interact_button.text = ""
 
 
             ## HERE WE WRITE BRIEF TUTORIALS (QUIDE)
@@ -139,16 +160,18 @@ class KivyTutorRoot(BoxLayout):
     
 
 
-    def changeScreen_(self):
+    def changeState(self):
 
 
         if (len(self.states) == 0):
-            print ("There are no folders!")
+            print ("There are no states!")
             sys.quit()
 
 
         idx = self.hmi_screen.button.idx 
-        print(idx)
+        self.current = idx
+
+        print(self.states[self.current])
 
         if idx < len(self.states):
             letter = self.states[idx]
@@ -160,6 +183,9 @@ class KivyTutorRoot(BoxLayout):
             self.hmi_screen.image.source = image    
             self.hmi_screen.question_image.text = letter         
             self.hmi_screen.button.idx += 1  
+            #Reset the dialogue counter
+            self.dialogue_idx = 0
+            #Go the next dialogue state letter
 
         #Here if we exceed the len of states, we are done => finish == True 
         else:
@@ -167,7 +193,7 @@ class KivyTutorRoot(BoxLayout):
             print('done!')
 
             #Reset loop
-            self.current = 0
+            #self.current = 0
             self.hmi_screen.button.idx = 0
 
     
@@ -195,7 +221,7 @@ class KivyTutorRoot(BoxLayout):
 
         while(True):
             ret, frame = cap.read()
-            cv2.imshow('frame',frame)
+            cv2.imshow('Point you hand at me :)',frame)
             
             #Call predictor
             prediction = rec.predict(frame, class_model, detect_model, args, class_names)
@@ -208,9 +234,11 @@ class KivyTutorRoot(BoxLayout):
 
             if (prediction == self.list[self.current]):
 
-                self.current += 1
+                #Go to the next letter
+                #self.current += 1
                 #increase score
                 self.score += 100
+
                 self.hmi_popup.open('Yes', self.score)
 
                 break
@@ -226,6 +254,50 @@ class KivyTutorRoot(BoxLayout):
         #Destroy window cam
         cap.release()
         cv2.destroyAllWindows()
+
+
+    #Instructive and interactive Dialogue with the user 
+    #A button when you click on it, it displays the next message
+    def interaction(self):
+
+        #print(self.dialogue_idx)
+        #print(self.states[self.current])
+
+        if (len(self.dialogues) == 0):
+            print ("There are no dialogues!")
+            sys.quit()
+        
+        #Read current dialogue using the states[idx] from dialogue folder
+        if(self.init_dialogue == True):
+
+            #Get the init dialogue file
+            #Starts only one time during the app launch
+            file = self.path_diaologue+"/init.txt"
+        else:
+            #Get the current state letter dialogue file
+            file = self.path_diaologue+'/'+self.states[self.current]+'.txt'
+
+
+        #Save lines of current states in a list
+        with open(file) as f:
+            list_dialogue = f.read().splitlines()
+
+        #print(list_dialogue)
+
+        if(self.dialogue_idx < len(list_dialogue)):
+            self.hmi_screen.interact_button.text = list_dialogue[self.dialogue_idx]
+            self.dialogue_idx += 1
+        else:
+            if(self.init_dialogue == True):
+                #Go to the next dialogue states
+                #init dialogue is done just one time during the app launch 
+                self.init_dialogue = False
+            self.hmi_screen.interact_button.text = ""
+
+
+        
+        #self.hmi_screen.interact_button.text = "  Put your fingers all straight up and touching and then bend your "
+
 
 
 ################################################################################
@@ -292,16 +364,15 @@ class HmiPopup(Popup):
         elif answer == 'No':
             #Dont do random
             hmi_screen = App.get_running_app().root.hmi_screen
-            print (len(self.BAD_LIST))
             self.bad_index += 1
-            print(self.bad_index)
+
             return self.BAD.format(self.BAD_LIST[self.bad_index])
 
         elif answer== 'Done':
             if(score > 0):
                 return 'You did it, GOOD JOB!\n'+'Score: '+str(score)
             else:
-                return 'Maybe if you try again, you get them all right this time :)'
+                return 'Maybe if you try again, you\'ll get them all this time :)\nClick on "Next" to reset.'
             
             
 ################################################################################
@@ -359,6 +430,19 @@ class KivyTutorApp(App):
         self.use_kivy_settings = False
         Window.bind(on_keyboard=self.onBackBtn)
 
+        #Add background music
+        sound = SoundLoader.load('periwinkle.mp3')
+        if sound:
+            print("Sound found at %s" % sound.source)
+            print("Sound is %.3f seconds" % sound.length)
+            
+            #loop the background music
+            sound.loop = True
+            #start with 50% volume
+            sound.volume = 0.5
+
+            sound.play()
+
     def onBackBtn(self, window, key, *args):
         # user presses back button
         if key == 27:
@@ -368,18 +452,7 @@ class KivyTutorApp(App):
 
         #TO DO: SETTINGS MUISC : VOLUME + MUTE
 
-        #Add background music
-        sound = SoundLoader.load('periwinkle.mp3')
-        if sound:
-            print("Sound found at %s" % sound.source)
-            print("Sound is %.3f seconds" % sound.length)
-            
-            #loop the background music
-            sound.loop = True
-            #100% volume
-            sound.volume = 1
-
-            sound.play()
+        
 
         return KivyTutorRoot()
 
