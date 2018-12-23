@@ -283,8 +283,8 @@ class HmiPopup(Popup):
 
     def _prep_text(self, answer, score):
 
-        if(self.bad_index > len(self.BAD_LIST)-1):
-            bad_index = -1
+        if(self.bad_index >= len(self.BAD_LIST)-1):
+            self.bad_index = -1
 
         if answer == 'Yes':
             index = random.randint(0, len(self.GOOD_LIST) - 1)
@@ -292,7 +292,9 @@ class HmiPopup(Popup):
         elif answer == 'No':
             #Dont do random
             hmi_screen = App.get_running_app().root.hmi_screen
+            print (len(self.BAD_LIST))
             self.bad_index += 1
+            print(self.bad_index)
             return self.BAD.format(self.BAD_LIST[self.bad_index])
 
         elif answer== 'Done':
@@ -400,20 +402,18 @@ class KivyTutorApp(App):
         webbrowser.open(_dict[ref])
 
     def build_config(self, config):
-        config.setdefaults("General", {"volume music": 0, "upper_num": 10, "Mute_Music": False})
+        config.setdefaults("General", {"volume_music": 1, "mute_music": False})
 
     def build_settings(self, settings):
         settings.add_json_panel("Kivy Hmi Tutor", self.config,
                                 data=json_settings)
 
     def on_config_change(self, config, section, key, value):
-        if key == "volume":
-            self.root.hmi_screen.max_num = int(value)
-        elif key == "lower_num":
-            self.root.hmi_screen.min_num = int(value)
+        if key == "volume_music":
+            self.root.hmi_screen.volume = int(value)
 
-        elif key == "Mute_Music":
-            self.root.hmi_screen.max_num = bool(value)
+        elif key == "mute_music":
+            self.root.hmi_screen.max_num = int(value)
 
 
 if __name__ == '__main__':
