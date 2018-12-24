@@ -241,7 +241,7 @@ class KivyTutorRoot(BoxLayout):
                 break
 
             #If exceed count limit then display error message
-            if(count >= 20000000):
+            if(count >= 200):
                 #decrease score
                 self.score -= 10
                 self.hmi_popup.open('No', self.score)
