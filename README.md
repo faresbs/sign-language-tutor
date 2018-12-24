@@ -83,8 +83,8 @@ python3 main.py
 
 ## Screenshots
 
-![Test Image 1](https://github.com/faresbs/sign-language-tutor/tree/master/screenshots/start.png)
-![Test Image 2](https://github.com/faresbs/sign-language-tutor/tree/master/screenshots/app.png)
+![Test Image 1](https://github.com/faresbs/sign-language-tutor/blob/master/screenshots/start.png)
+![Test Image 2](https://github.com/faresbs/sign-language-tutor/blob/master/screenshots/app.png)
 
 ## Built With
 
