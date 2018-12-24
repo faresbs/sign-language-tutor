@@ -58,10 +58,10 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: "hand.jpg"
+                source: "background.png"
 
         WrappedLabel:
-            text: "[b]Hand Shape Detection[/b]"
+            text: "[b]Sign Language Tutor[/b]"
             font_size: min(root.height, root.width) / 10
             
 
@@ -158,8 +158,6 @@
                 size_hint: .35, .7
                 
                 on_release: 
-
-                    insert_camera.text = "OUPS! Try again :)"
                     app.root.camCapture()
 
 

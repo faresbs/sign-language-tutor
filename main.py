@@ -19,7 +19,7 @@ from kivy.utils import get_color_from_hex
 
 #from kivy.uix.camera import Camera 
 
-from arithmetic import Arithmetic, json_settings
+#from arithmetic import Arithmetic, json_settings
 
 #-----pour la webam---
 #from kivy.lang import Builder
@@ -190,8 +190,8 @@ class KivyTutorRoot(BoxLayout):
             print('done!')
 
             #Reset loop
-            #self.current = 0
             self.hmi_screen.button.idx = 0
+            self.score = 0
 
     
 
@@ -241,7 +241,7 @@ class KivyTutorRoot(BoxLayout):
                 break
 
             #If exceed count limit then display error message
-            if(count >= 50):
+            if(count >= 200):
                 #decrease score
                 self.score -= 10
                 self.hmi_popup.open('No', self.score)
@@ -256,9 +256,6 @@ class KivyTutorRoot(BoxLayout):
     #Instructive and interactive Dialogue with the user 
     #A button when you click on it, it displays the next message
     def interaction(self):
-
-        #print(self.dialogue_idx)
-        #print(self.states[self.current])
 
         if (len(self.dialogues) == 0):
             print ("There are no dialogues!")
@@ -279,8 +276,6 @@ class KivyTutorRoot(BoxLayout):
         with open(file) as f:
             list_dialogue = f.read().splitlines()
 
-        #print(list_dialogue)
-
         if(self.dialogue_idx < len(list_dialogue)):
             self.hmi_screen.interact_button.text = list_dialogue[self.dialogue_idx]
             self.dialogue_idx += 1
@@ -293,13 +288,8 @@ class KivyTutorRoot(BoxLayout):
             self.hmi_screen.interact_button.text = "Click to show description!"
 
 
-        
-        #self.hmi_screen.interact_button.text = "  Put your fingers all straight up and touching and then bend your "
-
-
-
 ################################################################################
-class HmiScreen(Screen, Arithmetic):
+class HmiScreen(Screen):
     
     #Widget that will arc as a screen and hold funcs for hmi questions
     def __init__(self, *args, **kwargs):
@@ -372,50 +362,6 @@ class HmiPopup(Popup):
             else:
                 return 'Maybe if you try again, you\'ll get them all this time :)\nClick on "Next" to reset.'
             
-            
-################################################################################
-class KeyPad(GridLayout):
-    
-    #Documentation for KeyPad
-    def __init__(self, *args, **kwargs):
-        super(KeyPad, self).__init__(*args, **kwargs)
-        self.cols = 3
-        self.spacing = 10
-        #self.createButtons()
-
-    #def createButtons(self):
-        #_list = ["Yes", "No", "Next!"]
-        #for num in _list:
-            #self.add_widget(Button(text=str(num), on_release=self.onBtnPress))
-                       
-    def onBtnPress(self, btn):
-        hmi_screen = App.get_running_app().root.ids.hmi_screen
-        #####################################
-        #####################################
-        ####################################
-        #!dans ce cas, le système doit retourner un yes ou no en se basant sur cela on saura si si true or false, donc l'application lira plus la réponse du clavier mais du système, donc ça devient
-        #answer_text = système.answer
-        #######################################
-        ########################################
-        #########################################
-        answer_text = hmi_screen.answer_text
-
-        
-        #answer_text.text in this case will have yes or no as value 
-        answer_text.text = btn.text
-
-        if  answer_text.text != "": 
-            root = App.get_running_app().root
-            print("answer: ", answer_text.text)
-            if answer_text.text == "Yes":
-                root.hmi_popup.open('Yes')
-            elif answer_text.text == "No":
-                root.hmi_popup.open('No')
-            else:
-                root.hmi_popup.open("Done")
-
-            # Clear the answer text
-            answer_text.text = ""
 
 
 
@@ -429,7 +375,7 @@ class KivyTutorApp(App):
         Window.bind(on_keyboard=self.onBackBtn)
 
         #Add background music
-        sound = SoundLoader.load('periwinkle.mp3')
+        sound = SoundLoader.load('driving.mp3')
         if sound:
             print("Sound found at %s" % sound.source)
             print("Sound is %.3f seconds" % sound.length)
@@ -455,19 +401,19 @@ class KivyTutorApp(App):
         return KivyTutorRoot()
 
     def getText(self):
-        return ("Hey There!\nThis App was built using"
+        return ("Hey There!\nThis App was built using "
                 "[b][ref=kivy]kivy[/ref][/b]\n"
                 "Feel free to look at the source code "
                 "[b][ref=source]here[/ref][/b].\n"
                 "This app is under the [b][ref=mit]MIT License[/ref][/b]\n"
-                "My site: [b][ref=website]PyGopar.com[/ref][/b]")
+                )
 
     def on_ref_press(self, instance, ref):
         _dict = {
-            "source": "https://github.com/gopar/Kivy-Tutor",
-            "website": "http://www.pygopar.com",
+            "source": "https://github.com/faresbs/sign-language-tutor",
+            
             "kivy": "http://kivy.org/#home",
-            "mit": "https://github.com/gopar/Kivy-Tutor/blob/master/LICENSE"
+            "mit": "https://github.com/faresbs/sign-language-tutor/blob/master/LICENSE"
         }
 
         webbrowser.open(_dict[ref])
@@ -476,7 +422,7 @@ class KivyTutorApp(App):
         config.setdefaults("General", {"volume_music": 1, "mute_music": False})
 
     def build_settings(self, settings):
-        settings.add_json_panel("Kivy Hmi Tutor", self.config,
+        settings.add_json_panel("Sign Language Tutor", self.config,
                                 data=json_settings)
 
     def on_config_change(self, config, section, key, value):
