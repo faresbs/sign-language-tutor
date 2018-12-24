@@ -52,9 +52,9 @@ pip install joblib
 pip install numpy
 ```
 
-# Test
+## Test
 
-## Run the recognition system for Hand detection + gesture recognition
+### Run the recognition system for Hand detection + gesture recognition
 Recognition system is composed of two sub models: the first is for hand detection and the second one is for hand classification. 
 
 ### Pretrained Models
@@ -73,13 +73,18 @@ You can test out the recognition system directly wihout accessing to the applica
 ```
 python3 run.py
 ```
-## Run the application
+### Run the application
 
 You can run the whole application with the graphical interface.
 
 ```
 python3 main.py
 ```
+
+## Screenshots
+
+![Test Image 1](https://github.com/faresbs/sign-language-tutor/tree/master/screenshots/start.png)
+![Test Image 2](https://github.com/faresbs/sign-language-tutor/tree/master/screenshots/app.png)
 
 ## Built With
 
