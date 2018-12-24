@@ -43,7 +43,16 @@ Install opencv2.
 ```
 sudo apt-get install python-opencv
 ```
-# TEST
+
+Other dependencies (joblib, numpy, etc..).
+```
+pip install joblib
+```
+```
+pip install numpy
+```
+
+# Test
 
 ## Run the recognition system for Hand detection + gesture recognition
 Recognition system is composed of two sub models: the first is for hand detection and the second one is for hand classification. 
@@ -64,7 +73,7 @@ You can test out the recognition system directly wihout accessing to the applica
 ```
 python3 run.py
 ```
-## RUN THE APPLICATION
+## Run the application
 
 You can run the whole application with the graphical interface.
 
