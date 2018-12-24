@@ -241,7 +241,7 @@ class KivyTutorRoot(BoxLayout):
                 break
 
             #If exceed count limit then display error message
-            if(count >= 200):
+            if(count >= 20000000):
                 #decrease score
                 self.score -= 10
                 self.hmi_popup.open('No', self.score)
@@ -375,17 +375,28 @@ class KivyTutorApp(App):
         Window.bind(on_keyboard=self.onBackBtn)
 
         #Add background music
-        sound = SoundLoader.load('driving.mp3')
-        if sound:
-            print("Sound found at %s" % sound.source)
-            print("Sound is %.3f seconds" % sound.length)
+        self.sound = SoundLoader.load('driving.mp3')
+        if self.sound:
+            print("Sound found at %s" % self.sound.source)
+            print("Sound is %.3f seconds" % self.sound.length)
             
             #loop the background music
-            sound.loop = True
+            self.sound.loop = True
             #start with 50% volume
-            sound.volume = 0.5
+            self.sound.volume = 0.5
 
-            sound.play()
+            self.sound.play()
+
+
+
+    def stops(self):
+        self.sound.stop()
+
+    def toggle(self):
+        self.sound.state = 'play' if self.M.state == 'stop' else 'play'
+        return self.sound.state
+
+
 
     def onBackBtn(self, window, key, *args):
         # user presses back button
@@ -425,12 +436,12 @@ class KivyTutorApp(App):
         settings.add_json_panel("Sign Language Tutor", self.config,
                                 data=json_settings)
 
-    def on_config_change(self, config, section, key, value):
-        if key == "volume_music":
-            self.root.hmi_screen.volume = int(value)
+    #def on_config_change(self, config, section, key, value):
+    #    if key == "volume_music":
+    #       self.root.hmi_screen.volume = int(value)
 
-        elif key == "mute_music":
-            self.root.hmi_screen.max_num = int(value)
+    #    elif key == "mute_music":
+    #        self.root.hmi_screen.mute = int(value)
 
 
 if __name__ == '__main__':
