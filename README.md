@@ -94,7 +94,7 @@ You are free to use this project or contribute that would be cool.
 ## Authors
 
 * **Fares Ben Slimane** - *recognition system* - [check my personal webpage](http://faresbs.github.io)
-* **Gaieth Dkhili** - *UI application*)
+* **Gaieth Dkhili** - *UI application*
 
 ## License
 
