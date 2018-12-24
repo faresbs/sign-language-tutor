@@ -4,7 +4,7 @@ An intelligent application to teach sign language to non-deaf users. The applica
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 ### Prerequisites
 
@@ -44,25 +44,17 @@ Install opencv2.
 sudo apt-get install python-opencv
 ```
 
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
+Other dependencies (joblib, numpy, etc..).
 ```
-Give the example
+pip install joblib
+```
+```
+pip install numpy
 ```
 
-And repeat
+# Test
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Run recognition system
+## Run the recognition system for Hand detection + gesture recognition
 Recognition system is composed of two sub models: the first is for hand detection and the second one is for hand classification. 
 
 ### Pretrained Models
@@ -72,7 +64,7 @@ URL: https://drive.google.com/file/d/1dhjs9WJmQIirgxC0u47DnUqynBAm3B7r/view?usp=
 hand classification model (VGG16)
 URL: https://drive.google.com/file/d/12-SDr-KZ3I1tYXtsTYHScTxq2SS5Ig4j/view?usp=sharing
 
-## Running
+### Running
 
 You need to download the models' files first. Place the classification model file (VGG16) under the weights/class folder. Place the detection model file (mobilenet-ssd) under the weights/detection folder.
 
@@ -81,7 +73,13 @@ You can test out the recognition system directly wihout accessing to the applica
 ```
 python3 run.py
 ```
+## Run the application
 
+You can run the whole application with the graphical interface.
+
+```
+python3 main.py
+```
 
 ## Built With
 
@@ -96,7 +94,7 @@ You are free to use this project or contribute that would be cool.
 ## Authors
 
 * **Fares Ben Slimane** - *recognition system* - [check my personal webpage](http://faresbs.github.io)
-* **Gaieth Dkhili** - *UI application*)
+* **Gaieth Dkhili** - *UI application*
 
 ## License
 
@@ -106,5 +104,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * This project was made as part of the course of Intelligent Tutoring System.
 * The detection ssd model has been taken from qfgaohao (https://github.com/qfgaohao/pytorch-ssd).  
+* Background music used (https://opengameart.org/content/driving-0).
 
 
